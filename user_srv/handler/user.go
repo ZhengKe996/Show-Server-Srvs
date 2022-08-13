@@ -105,7 +105,6 @@ func (s *UserServer) GetUserById(ctx context.Context, req *proto.IdRequest) (*pr
 func (s *UserServer) CreateUser(ctx context.Context, req *proto.CreateUserInfo) (*proto.UserInfoResponse, error) {
 	var user model.User
 	result := global.DB.Where(&model.User{Mobile: req.Mobile}).First(&user)
-
 	if result.RowsAffected == 1 {
 		return nil, status.Error(codes.AlreadyExists, "用户已存在")
 	}
@@ -113,7 +112,7 @@ func (s *UserServer) CreateUser(ctx context.Context, req *proto.CreateUserInfo) 
 	user.NikeName = req.NickName
 
 	// 密码加密
-	user.Password = global.Encryption(user.Password)
+	user.Password = global.Encryption(req.PassWord)
 
 	result = global.DB.Create(&user)
 	if result.Error != nil {

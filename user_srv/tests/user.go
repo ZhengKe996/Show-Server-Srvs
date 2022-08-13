@@ -46,9 +46,9 @@ func TestGetUserList() {
 
 // TestCreateUser 测试创建用户接口
 func TestCreateUser() {
-	encryption := global.Encryption("admin123")
+	encryption := "admin123"
 	for i := 0; i < 10; i++ {
-		rsp, err := userClient.CreateUser(context.Background(), &proto.CreateUserInfo{
+		req, err := userClient.CreateUser(context.Background(), &proto.CreateUserInfo{
 			NickName: fmt.Sprintf("zhangsan%d", i),
 			Mobile:   fmt.Sprintf("1981689629%d", i),
 			PassWord: encryption,
@@ -56,7 +56,7 @@ func TestCreateUser() {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(rsp.Id)
+		fmt.Println(req.PassWord)
 	}
 }
 
@@ -96,12 +96,18 @@ func TestUpdateUser() {
 		}
 	}
 }
+
+func TestCheckPassword() {
+	word := global.CheckPassWord("admin123", "$pbkdf2-sha512$TQLXmldWtgJTQsCZ$fba4ab8b2c3f190aa9af7c630622de9b0796491c748d2f8192134cf2c965557a")
+	fmt.Println(word)
+}
 func main() {
 	Init()
-	//TestGetUserList()
+	TestGetUserList()
 	//TestCreateUser()
 	//TestGetUserByID()
 	//TestGetUserByMobile()
 	//TestUpdateUser()
+	//TestCheckPassword()
 	defer conn.Close()
 }
