@@ -7,12 +7,12 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/vo"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
-	"server_srvs//global"
+	"server_srvs/goods_srv/global"
 )
 
 // InitConfig 从配置文件中读取配置
 func InitConfig() {
-	configFileName := "/config.yaml"
+	configFileName := "goods_srv/config.yaml"
 	v := viper.New()
 	v.SetConfigFile(configFileName)
 	if err := v.ReadInConfig(); err != nil {

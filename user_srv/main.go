@@ -22,8 +22,8 @@ import (
 
 func main() {
 	// 初始化
-	initialize.InitConfig()
 	initialize.InitLogger()
+	initialize.InitConfig()
 	initialize.InitDB()
 
 	// 命令解析
@@ -56,7 +56,7 @@ func main() {
 
 	// 生成对应的检查对象
 	check := new(api.AgentServiceCheck)
-	check.GRPC = fmt.Sprintf("192.168.0.162:%d", *Port)
+	check.GRPC = fmt.Sprintf("%s:%d", global.ServerConfig.Host, *Port)
 	check.Timeout = "5s"
 	check.Interval = "5s"
 	check.DeregisterCriticalServiceAfter = "10s"
@@ -67,8 +67,8 @@ func main() {
 	serviceID := fmt.Sprintf("%s", uuid.NewV4())
 	registration.ID = serviceID
 	registration.Port = *Port
-	registration.Tags = []string{"user", "srv"}
-	registration.Address = "192.168.0.162"
+	registration.Tags = global.ServerConfig.Tags
+	registration.Address = global.ServerConfig.Host
 	registration.Check = check
 
 	err = client.Agent().ServiceRegister(registration)

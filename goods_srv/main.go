@@ -12,18 +12,18 @@ import (
 	"net"
 	"os"
 	"os/signal"
-	"server_srvs//global"
-	"server_srvs//handler"
-	"server_srvs//initialize"
-	"server_srvs//proto"
-	"server_srvs//utils"
+	"server_srvs/goods_srv/global"
+	"server_srvs/goods_srv/handler"
+	"server_srvs/goods_srv/initialize"
+	"server_srvs/goods_srv/proto"
+	"server_srvs/goods_srv/utils"
 	"syscall"
 )
 
 func main() {
 	// 初始化
-	initialize.InitConfig()
 	initialize.InitLogger()
+	initialize.InitConfig()
 	initialize.InitDB()
 
 	// 命令解析
@@ -36,7 +36,7 @@ func main() {
 	}
 	zap.S().Infof("IP:%s, Port:%d", *IP, *Port)
 	server := grpc.NewServer()
-	proto.RegisterUserServer(server, &handler.UserServer{})
+	proto.RegisterGoodsServer(server, &handler.GoodsServer{})
 	listen, err := net.Listen("tcp", fmt.Sprintf("%s:%d", *IP, *Port))
 	if err != nil {
 		panic("failed to listen:" + err.Error())
@@ -56,7 +56,7 @@ func main() {
 
 	// 生成对应的检查对象
 	check := new(api.AgentServiceCheck)
-	check.GRPC = fmt.Sprintf("192.168.0.162:%d", *Port)
+	check.GRPC = fmt.Sprintf("%s:%d", global.ServerConfig.Host, *Port)
 	check.Timeout = "5s"
 	check.Interval = "5s"
 	check.DeregisterCriticalServiceAfter = "10s"
@@ -67,8 +67,8 @@ func main() {
 	serviceID := fmt.Sprintf("%s", uuid.NewV4())
 	registration.ID = serviceID
 	registration.Port = *Port
-	registration.Tags = []string{"user", "srv"}
-	registration.Address = "192.168.0.162"
+	registration.Tags = global.ServerConfig.Tags
+	registration.Address = global.ServerConfig.Host
 	registration.Check = check
 
 	err = client.Agent().ServiceRegister(registration)
@@ -88,7 +88,7 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	if err = client.Agent().ServiceDeregister(serviceID); err != nil {
-		zap.S().Info("【UserSrv服务】注销失败")
+		zap.S().Info("【GoodsSrv服务】注销失败")
 	}
-	zap.S().Info("【UserSrv服务】注销成功")
+	zap.S().Info("【GoodsSrv服务】注销成功")
 }
