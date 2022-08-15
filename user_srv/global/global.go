@@ -12,6 +12,7 @@ import (
 var (
 	DB           *gorm.DB
 	ServerConfig config.ServerConfig
+	NaCosConfig  config.NaCosConfig
 )
 
 var options = &password.Options{16, 100, 32, sha512.New}

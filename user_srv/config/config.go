@@ -19,7 +19,7 @@ type ServerConfig struct {
 	ConsulInfo ConsulConfig `mapstructure:"consul" json:"consul"`
 }
 
-type NacosConfig struct {
+type NaCosConfig struct {
 	Host      string `mapstructure:"host"`
 	Port      uint64 `mapstructure:"port"`
 	Namespace string `mapstructure:"namespace"`
